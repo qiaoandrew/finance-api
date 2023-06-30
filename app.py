@@ -15,8 +15,8 @@ def search():
     query = request.args.get('query')
     data = yq.search(query)
     quotes = data.get('quotes', [])
-    filteredQuotes = list(filter(lambda result: result.get('exchDisp', '') in [
-        'NYSE', 'NASDAQ', 'Toronto'] and result.get('quoteType', '') == 'EQUITY', quotes))
+    filteredQuotes = list(filter(lambda result: result.get('exchange', '') in [
+        'NYQ', 'NMS'] and result.get('quoteType', '') == 'EQUITY', quotes))
     formattedQuotes = list(map(lambda result: {
         'symbol': result.get('symbol', ''),
         'name': result.get('shortname', ''),
@@ -36,7 +36,8 @@ def trending():
             'quoteType': price.get('quoteType', ''),
             'price': round(price.get('regularMarketPrice', ''), 2),
             'change': round(price.get('regularMarketChange', ''), 2),
-            'changePercent': round(price.get('regularMarketChangePercent'), 2)
+            'changePercent': round(price.get('regularMarketChangePercent'), 2),
+            'exchange': price.get('exchange', ''),
         }
 
     country = request.args.get('country') or 'united states'
@@ -45,7 +46,7 @@ def trending():
     formattedQuotes = list(
         map(lambda result: get_price(result.get('symbol', '')), quotes))
     filteredQuotes = list(
-        filter(lambda result: result.get('quoteType', '') == 'EQUITY', formattedQuotes))
+        filter(lambda result: result.get('quoteType', '') == 'EQUITY' and result.get('exchange', '') in ['NYQ', 'NMS'], formattedQuotes))
     return jsonify(filteredQuotes), 200
 
 
