@@ -36,7 +36,7 @@ def trending():
             'quoteType': price.get('quoteType', ''),
             'price': round(price.get('regularMarketPrice', ''), 2),
             'change': round(price.get('regularMarketChange', ''), 2),
-            'changePercent': round(price.get('regularMarketChangePercent'), 2),
+            'changePercent': round(price.get('regularMarketChangePercent') * 100, 2),
             'exchange': price.get('exchange', ''),
         }
 
