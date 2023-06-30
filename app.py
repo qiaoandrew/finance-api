@@ -14,8 +14,15 @@ CORS(app)
 def search():
     query = request.args.get('query')
     data = yq.search(query)
-    results = list(filter(lambda result : result.get('exchDisp', '') in ['NYSE', 'NASDAQ', 'Toronto'] and result.get('quoteType', '') == 'EQUITY', data.get('quotes', [])))
-    return jsonify(results), 200
+    results = data.get('quotes', [])
+    filteredResults = list(filter(lambda result: result.get('exchDisp', '') in [
+                           'NYSE', 'NASDAQ', 'Toronto'] and result.get('quoteType', '') == 'EQUITY', results))
+    formattedResults = list(map(lambda result: {
+        'symbol': result.get('symbol', ''),
+        'name': result.get('shortname', ''),
+        'exchange': result.get('exchDisp', ''),
+    }, filteredResults))
+    return jsonify(formattedResults), 200
 
 
 # https://yahooquery.dpguthrie.com/guide/misc/#get_trending
