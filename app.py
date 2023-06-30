@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import yahooquery as yq
+import finnhub as fh
 import pandas as pd
 
 
@@ -12,14 +13,9 @@ CORS(app)
 @app.route('/search', methods=['GET'])
 def search():
     query = request.args.get('query')
-    search_type = request.args.get('type')
     data = yq.search(query)
-    if search_type == 'quotes':
-        return jsonify(data.get('quotes', [])), 200
-    elif search_type == 'news':
-        return jsonify(data.get('news', [])), 200
-    else:
-        return jsonify(data), 200
+    results = list(filter(lambda result : result.get('exchDisp', '') in ['NYSE', 'Nasdaq', 'Toronto'], data.get('quotes', [])))
+    return jsonify(results), 200
 
 
 # https://yahooquery.dpguthrie.com/guide/misc/#get_trending
