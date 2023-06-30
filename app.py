@@ -14,23 +14,39 @@ CORS(app)
 def search():
     query = request.args.get('query')
     data = yq.search(query)
-    results = data.get('quotes', [])
-    filteredResults = list(filter(lambda result: result.get('exchDisp', '') in [
-                           'NYSE', 'NASDAQ', 'Toronto'] and result.get('quoteType', '') == 'EQUITY', results))
-    formattedResults = list(map(lambda result: {
+    quotes = data.get('quotes', [])
+    filteredQuotes = list(filter(lambda result: result.get('exchDisp', '') in [
+        'NYSE', 'NASDAQ', 'Toronto'] and result.get('quoteType', '') == 'EQUITY', quotes))
+    formattedQuotes = list(map(lambda result: {
         'symbol': result.get('symbol', ''),
         'name': result.get('shortname', ''),
         'exchange': result.get('exchDisp', ''),
-    }, filteredResults))
-    return jsonify(formattedResults), 200
+    }, filteredQuotes))
+    return jsonify(formattedQuotes), 200
 
 
 # https://yahooquery.dpguthrie.com/guide/misc/#get_trending
 @app.route('/trending', methods=['GET'])
 def trending():
+    def get_price(ticker):
+        data = yq.Ticker(ticker)
+        price = data.price[ticker]
+        return {
+            'symbol': price.get('symbol', ''),
+            'quoteType': price.get('quoteType', ''),
+            'price': round(price.get('regularMarketPrice', ''), 2),
+            'change': round(price.get('regularMarketChange', ''), 2),
+            'changePercent': round(price.get('regularMarketChangePercent'), 2)
+        }
+
     country = request.args.get('country') or 'united states'
     data = yq.get_trending(country=country)
-    return jsonify(data.get('quotes', [])), 200
+    quotes = data.get('quotes', [])
+    formattedQuotes = list(
+        map(lambda result: get_price(result.get('symbol', '')), quotes))
+    filteredQuotes = list(
+        filter(lambda result: result.get('quoteType', '') == 'EQUITY', formattedQuotes))
+    return jsonify(filteredQuotes), 200
 
 
 # https://yahooquery.dpguthrie.com/guide/misc/#get_market_summary
