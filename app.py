@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import yahooquery as yq
-import finnhub as fh
+import finnhub
 import pandas as pd
 
 
@@ -62,6 +62,16 @@ def market_summary():
         'changePercent': round(result.get('regularMarketChangePercent', {}).get('raw', 0), 2)
     }, data))
     return jsonify(formattedSummaries), 200
+
+
+# https://finnhub.io/docs/api/market-news
+@app.route('/market-news', methods=['GET'])
+def market_news():
+    finnhub_client = finnhub.Client(
+        api_key="ch56jm9r01quc2n554i0ch56jm9r01quc2n554ig")
+    news = finnhub_client.general_news('general', min_id=0)
+    filteredNews = list(filter(lambda article: article.get('image', ''), news))
+    return jsonify(filteredNews), 200
 
 
 # https://yahooquery.dpguthrie.com/guide/screener/#available_screeners
