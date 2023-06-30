@@ -34,9 +34,9 @@ def trending():
         return {
             'symbol': price.get('symbol', ''),
             'quoteType': price.get('quoteType', ''),
-            'price': round(price.get('regularMarketPrice', ''), 2),
-            'change': round(price.get('regularMarketChange', ''), 2),
-            'changePercent': round(price.get('regularMarketChangePercent') * 100, 2),
+            'price': round(price.get('regularMarketPrice', 0), 2),
+            'change': round(price.get('regularMarketChange', 0), 2),
+            'changePercent': round(price.get('regularMarketChangePercent', 0) * 100, 2),
             'exchange': price.get('exchange', ''),
         }
 
@@ -55,7 +55,13 @@ def trending():
 def market_summary():
     country = request.args.get('country') or 'united states'
     data = yq.get_market_summary(country=country)
-    return jsonify(data), 200
+    formattedSummaries = list(map(lambda result: {
+        'name': result.get('shortName', ''),
+        'price': result.get('regularMarketPrice', {}).get('raw', 0),
+        'change': round(result.get('regularMarketChange', {}).get('raw', 0), 2),
+        'changePercent': round(result.get('regularMarketChangePercent', {}).get('raw', 0), 2)
+    }, data))
+    return jsonify(formattedSummaries), 200
 
 
 # https://yahooquery.dpguthrie.com/guide/screener/#available_screeners
