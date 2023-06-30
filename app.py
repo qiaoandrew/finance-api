@@ -14,7 +14,7 @@ CORS(app)
 def search():
     query = request.args.get('query')
     data = yq.search(query)
-    results = list(filter(lambda result : result.get('exchDisp', '') in ['NYSE', 'Nasdaq', 'Toronto'], data.get('quotes', [])))
+    results = list(filter(lambda result : result.get('exchDisp', '') in ['NYSE', 'NASDAQ', 'Toronto'] and result.get('quoteType', '') == 'EQUITY', data.get('quotes', [])))
     return jsonify(results), 200
 
 
