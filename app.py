@@ -30,6 +30,8 @@ def search():
 def trending():
     def get_price(ticker):
         data = yq.Ticker(ticker)
+        if not data.price.get(ticker, None):
+            return None
         price = data.price[ticker]
         return {
             'symbol': price.get('symbol', ''),
@@ -46,7 +48,7 @@ def trending():
     formattedQuotes = list(
         map(lambda result: get_price(result.get('symbol', '')), quotes))
     filteredQuotes = list(
-        filter(lambda result: result.get('quoteType', '') == 'EQUITY' and result.get('exchange', '') in ['NYQ', 'NMS'], formattedQuotes))
+        filter(lambda result: result and result.get('quoteType', '') == 'EQUITY' and result.get('exchange', '') in ['NYQ', 'NMS'], formattedQuotes))
     return jsonify(filteredQuotes), 200
 
 
@@ -82,15 +84,6 @@ def market_news():
     return jsonify(formattedNews), 200
 
 
-# https://yahooquery.dpguthrie.com/guide/screener/#available_screeners
-@app.route('/screener', methods=['GET'])
-def screener():
-    screener_type = request.args.get('type')
-    s = yq.Screener()
-    data = s.get_screeners([screener_type])
-    return jsonify(data[screener_type]), 200
-
-
 # https://yahooquery.dpguthrie.com/guide/ticker/modules/#price
 @app.route('/price', methods=['GET'])
 def price():
@@ -106,6 +99,15 @@ def price():
         'exchange': 'NASDAQ' if price.get('exchange', '') == 'NMS' else 'NYSE',
     }
     return jsonify(formattedPrice), 200
+
+
+# https://yahooquery.dpguthrie.com/guide/screener/#available_screeners
+@app.route('/screener', methods=['GET'])
+def screener():
+    screener_type = request.args.get('type')
+    s = yq.Screener()
+    data = s.get_screeners([screener_type])
+    return jsonify(data[screener_type]), 200
 
 
 # # https://yahooquery.dpguthrie.com/guide/ticker/historical/#history
