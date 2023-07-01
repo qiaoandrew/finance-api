@@ -73,6 +73,7 @@ def market_news():
     filteredNews = list(
         filter(lambda article: article.get('image', ''), news))[:20]
     formattedNews = list(map(lambda article: {
+        'id': article.get('id', ''),
         'headline': article.get('headline', ''),
         'summary': article.get('summary', ''),
         'image': article.get('image', ''),
