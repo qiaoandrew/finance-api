@@ -31,15 +31,14 @@ def trending():
     def get_price(ticker):
         data = yq.Ticker(ticker)
         price = data.price.get(ticker, None)
-        if not price:
+        if not price or price.get('exchange', '') not in ('NMS', 'NYQ') or price.get('quoteType', '') != 'EQUITY':
             return None
         return {
             'symbol': price.get('symbol', ''),
-            'quoteType': price.get('quoteType', ''),
             'price': round(price.get('regularMarketPrice', 0), 2),
             'change': round(price.get('regularMarketChange', 0), 2),
             'changePercent': round(price.get('regularMarketChangePercent', 0) * 100, 2),
-            'exchange': price.get('exchange', ''),
+            'exchange': 'NASDAQ' if price.get('exchange', '') == 'NMS' else 'NYSE',
         }
 
     country = request.args.get('country') or 'united states'
@@ -48,7 +47,7 @@ def trending():
     formattedQuotes = list(
         map(lambda result: get_price(result.get('symbol', '')), quotes))
     filteredQuotes = list(
-        filter(lambda result: result and result.get('quoteType', '') == 'EQUITY' and result.get('exchange', '') in ['NYQ', 'NMS'], formattedQuotes))
+        filter(lambda result: result, formattedQuotes))
     return jsonify(filteredQuotes), 200
 
 
