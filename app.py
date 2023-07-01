@@ -86,8 +86,24 @@ def market_news():
 def screener():
     screener_type = request.args.get('type')
     s = yq.Screener()
-    data = s.get_screeners(screener_type)
+    data = s.get_screeners([screener_type])
     return jsonify(data[screener_type]), 200
+
+
+# https://yahooquery.dpguthrie.com/guide/ticker/modules/#price
+@app.route('/price', methods=['GET'])
+def price():
+    symbol = request.args.get('symbol')
+    data = yq.Ticker(symbol)
+    price = data.price[symbol]
+    formattedPrice = {
+        'symbol': price.get('symbol', ''),
+        'price': round(price.get('regularMarketPrice', 0), 2),
+        'change': round(price.get('regularMarketChange', 0), 2),
+        'changePercent': round(price.get('regularMarketChangePercent', 0) * 100, 2),
+        'exchange': price.get('exchange', ''),
+    }
+    return jsonify(formattedPrice), 200
 
 
 # https://yahooquery.dpguthrie.com/guide/ticker/historical/#history
@@ -100,14 +116,6 @@ def history():
     history_df = data.history(period=period, interval=interval)
     history_dict = history_df.to_dict(orient='records')
     return jsonify(history_dict), 200
-
-
-# https://yahooquery.dpguthrie.com/guide/ticker/modules/#price
-@app.route('/price', methods=['GET'])
-def price():
-    ticker = request.args.get('ticker')
-    data = yq.Ticker(ticker)
-    return jsonify(data.price[ticker]), 200
 
 
 # https://yahooquery.dpguthrie.com/guide/ticker/miscellaneous/#news
