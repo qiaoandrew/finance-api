@@ -30,9 +30,9 @@ def search():
 def trending():
     def get_price(ticker):
         data = yq.Ticker(ticker)
-        if not data.price.get(ticker, None):
+        price = data.price.get(ticker, None)
+        if not price:
             return None
-        price = data.price[ticker]
         return {
             'symbol': price.get('symbol', ''),
             'quoteType': price.get('quoteType', ''),
@@ -89,7 +89,9 @@ def market_news():
 def price():
     symbol = request.args.get('symbol')
     data = yq.Ticker(symbol)
-    price = data.price[symbol]
+    price = data.price.get(symbol, None)
+    if not price:
+        return jsonify({}), 404
     formattedPrice = {
         'symbol': price.get('symbol', ''),
         'name': price.get('shortName', ''),
