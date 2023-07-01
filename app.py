@@ -98,6 +98,7 @@ def price():
     price = data.price[symbol]
     formattedPrice = {
         'symbol': price.get('symbol', ''),
+        'name': price.get('shortName', ''),
         'price': round(price.get('regularMarketPrice', 0), 2),
         'change': round(price.get('regularMarketChange', 0), 2),
         'changePercent': round(price.get('regularMarketChangePercent', 0) * 100, 2),
