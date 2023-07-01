@@ -37,13 +37,13 @@ def trending():
     trending = []
     for symbol, value in prices.items():
         print(value)
-        if type(value) == str or value.get('exchange', '') not in ('NMS', 'NYQ') or value.get('quoteType', '') != 'EQUITY':
+        if type(value) is str or value.get('exchange', '') not in ('NMS', 'NYQ') or value.get('quoteType', '') != 'EQUITY':
             continue
         trending.append({
             'symbol': symbol,
             'price': round(value.get('regularMarketPrice', 0), 2),
-            'change: ': round(value.get('regularMarketChange', 0), 2),
-            'changePercent:': round(value.get('regularMarketChangePercent', 0) * 100, 2),
+            'change': round(value.get('regularMarketChange', 0), 2),
+            'changePercent': round(value.get('regularMarketChangePercent', 0) * 100, 2),
         })
     return jsonify(trending), 200
 
