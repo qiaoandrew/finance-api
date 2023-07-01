@@ -28,27 +28,23 @@ def search():
 # https://yahooquery.dpguthrie.com/guide/misc/#get_trending
 @app.route('/trending', methods=['GET'])
 def trending():
-    def get_price(ticker):
-        data = yq.Ticker(ticker)
-        price = data.price.get(ticker, None)
-        if not price or price.get('exchange', '') not in ('NMS', 'NYQ') or price.get('quoteType', '') != 'EQUITY':
-            return None
-        return {
-            'symbol': price.get('symbol', ''),
-            'price': round(price.get('regularMarketPrice', 0), 2),
-            'change': round(price.get('regularMarketChange', 0), 2),
-            'changePercent': round(price.get('regularMarketChangePercent', 0) * 100, 2),
-            'exchange': 'NASDAQ' if price.get('exchange', '') == 'NMS' else 'NYSE',
-        }
-
     country = request.args.get('country') or 'united states'
     data = yq.get_trending(country=country)
     quotes = data.get('quotes', [])
-    formattedQuotes = list(
-        map(lambda result: get_price(result.get('symbol', '')), quotes))
-    filteredQuotes = list(
-        filter(lambda result: result, formattedQuotes))
-    return jsonify(filteredQuotes), 200
+    symbols = list(map(lambda result: result.get('symbol', ''), quotes))
+    tickers = yq.Ticker(symbols)
+    prices = tickers.price
+    trending = []
+    for symbol, value in prices.items():
+        if value.get('exchange', '') not in ('NMS', 'NYQ') or value.get('quoteType', '') != 'EQUITY':
+            continue
+        trending.append({
+            'symbol': symbol,
+            'price': round(value.get('regularMarketPrice', 0), 2),
+            'change: ': round(value.get('regularMarketChange', 0), 2),
+            'changePercent:': round(value.get('regularMarketChangePercent', 0) * 100, 2),
+        })
+    return jsonify(trending), 200
 
 
 # https://yahooquery.dpguthrie.com/guide/misc/#get_market_summary
