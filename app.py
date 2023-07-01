@@ -36,7 +36,8 @@ def trending():
     prices = tickers.price
     trending = []
     for symbol, value in prices.items():
-        if value.get('exchange', '') not in ('NMS', 'NYQ') or value.get('quoteType', '') != 'EQUITY':
+        print(value)
+        if type(value) == str or value.get('exchange', '') not in ('NMS', 'NYQ') or value.get('quoteType', '') != 'EQUITY':
             continue
         trending.append({
             'symbol': symbol,
