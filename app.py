@@ -89,7 +89,7 @@ def price():
     symbol = request.args.get('symbol')
     data = yq.Ticker(symbol)
     price = data.price.get(symbol, None)
-    if not price:
+    if not price or price.get('exchange', '') not in ('NMS', 'NYQ') or price.get('quoteType', '') != 'EQUITY':
         return jsonify({}), 404
     formattedPrice = {
         'symbol': price.get('symbol', ''),
