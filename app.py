@@ -170,24 +170,24 @@ def news():
     return jsonify(data.news), 200
 
 
+# https://yahooquery.dpguthrie.com/guide/ticker/historical/#history
+@app.route('/history', methods=['GET'])
+def history():
+    symbol = request.args.get('symbol')
+    period = request.args.get('period')
+    interval = request.args.get('interval')
+    data = yf.Ticker(symbol)
+    history_df = data.history(period=period, interval=interval)
+    history_dict = history_df.to_dict(orient='records')
+    return jsonify(history_dict), 200
+
+
 # # https://yahooquery.dpguthrie.com/guide/ticker/modules/#key_stats
 # @app.route('/key-stats', methods=['GET'])
 # def key_stats():
 #     symbol = request.args.get('symbol')
 #     data = yq.Ticker(symbol)
 #     return jsonify(data.key_stats[symbol]), 200
-
-
-# # https://yahooquery.dpguthrie.com/guide/ticker/historical/#history
-# @app.route('/history', methods=['GET'])
-# def history():
-#     ticker = request.args.get('ticker')
-#     period = request.args.get('period')
-#     interval = request.args.get('interval')
-#     data = yq.Ticker(ticker)
-#     history_df = data.history(period=period, interval=interval)
-#     history_dict = history_df.to_dict(orient='records')
-#     return jsonify(history_dict), 200
 
 
 # # https://yahooquery.dpguthrie.com/guide/ticker/miscellaneous/#quotes
