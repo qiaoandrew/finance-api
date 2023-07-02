@@ -116,10 +116,30 @@ def price():
 # https://yahooquery.dpguthrie.com/guide/screener/#available_screeners
 @app.route('/screener', methods=['GET'])
 def screener():
+    def format_quote(quote):
+        return {
+            'symbol': quote.get('symbol', ''),
+            'name': quote.get('shortName', ''),
+            'price': round(quote.get('regularMarketPrice', 0), 2),
+            'change': round(quote.get('regularMarketChange', 0), 2),
+            'changePercent': round(quote.get('regularMarketChangePercent', 0), 2),
+        }
+
     screener_type = request.args.get('type')
     s = yq.Screener()
     data = s.get_screeners([screener_type])
-    return jsonify(data[screener_type]), 200
+    quotes = data.get(screener_type, {}).get('quotes', [])
+    filteredQuotes = list(filter(lambda quote: quote.get('exchange', '') in (
+        'NMS', 'NYQ') and quote.get('quoteType', '') == 'EQUITY', quotes))
+    formattedQuotes = list(map(format_quote, filteredQuotes))
+    return jsonify(formattedQuotes), 200
+
+
+# https://yahooquery.dpguthrie.com/guide/screener/#available_screeners
+@app.route('/available-screeners', methods=['GET'])
+def available_screeners():
+    s = yq.Screener()
+    return jsonify(s.available_screeners), 200
 
 
 # # https://yahooquery.dpguthrie.com/guide/ticker/historical/#history
@@ -283,7 +303,6 @@ def screener():
 #     ticker = request.args.get('ticker')
 #     data = yq.Ticker(ticker)
 #     return jsonify(data.fund_top_holdings[ticker]), 200
-
 
 if __name__ == '__main__':
     app.run(debug=True)
