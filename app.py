@@ -144,11 +144,14 @@ def available_screeners():
 
 
 # https://yahooquery.dpguthrie.com/guide/ticker/modules/#summary_detail
-@app.route('/summary-detail', methods=['GET'])
+# https://yahooquery.dpguthrie.com/guide/ticker/modules/#key_stats
+@app.route('/summary', methods=['GET'])
 def summary_detail():
     symbol = request.args.get('symbol')
     data = yq.Ticker(symbol)
-    return jsonify(data.summary_detail[symbol]), 200
+    summary = data.summary_detail[symbol]
+    summary.update(data.key_stats[symbol])
+    return jsonify(summary), 200
 
 
 # https://yahooquery.dpguthrie.com/guide/ticker/miscellaneous/#news
