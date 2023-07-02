@@ -179,7 +179,6 @@ def history():
     data = yf.Ticker(symbol)
     history_df = data.history(period=period, interval=interval)
     history_df.reset_index(inplace=True)
-    history_df['Date'] = history_df['Date'].dt.strftime('%Y-%m-%d %H:%M:%S%z')
     history_dict = history_df.to_dict(orient='records')
     return jsonify(history_dict), 200
 
