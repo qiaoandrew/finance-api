@@ -1,6 +1,7 @@
 Flask
 flask_cors
 yahooquery
+yfinance
 pandas
 gunicorn
 finnhub-python
