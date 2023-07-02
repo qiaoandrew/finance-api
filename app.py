@@ -163,11 +163,11 @@ def profile():
 
 
 # https://yahooquery.dpguthrie.com/guide/ticker/miscellaneous/#news
-# @app.route('/news', methods=['GET'])
-# def news():
-#     symbol = request.args.get('symbol')
-#     data = yq.Ticker(symbol)
-#     return jsonify(data.news(20)), 200
+@app.route('/news', methods=['GET'])
+def news():
+    symbol = request.args.get('symbol')
+    data = yf.Ticker(symbol)
+    return jsonify(data.news), 200
 
 
 # # https://yahooquery.dpguthrie.com/guide/ticker/modules/#key_stats
