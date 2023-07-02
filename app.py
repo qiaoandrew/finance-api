@@ -154,6 +154,14 @@ def summary_detail():
     return jsonify(summary), 200
 
 
+# https://yahooquery.dpguthrie.com/guide/ticker/modules/#asset_profile
+@app.route('/profile', methods=['GET'])
+def profile():
+    symbol = request.args.get('symbol')
+    data = yq.Ticker(symbol)
+    return jsonify(data.asset_profile[symbol]), 200
+
+
 # https://yahooquery.dpguthrie.com/guide/ticker/miscellaneous/#news
 # @app.route('/news', methods=['GET'])
 # def news():
@@ -196,14 +204,6 @@ def summary_detail():
 #     ticker = request.args.get('ticker')
 #     data = yq.Ticker(ticker)
 #     return jsonify(data.recommendations), 200
-
-
-# # https://yahooquery.dpguthrie.com/guide/ticker/modules/#asset_profile
-# @app.route('/profile', methods=['GET'])
-# def profile():
-#     ticker = request.args.get('ticker')
-#     data = yq.Ticker(ticker)
-#     return jsonify(data.asset_profile[ticker]), 200
 
 
 # # https://yahooquery.dpguthrie.com/guide/ticker/modules/#financial_data
