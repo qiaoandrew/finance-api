@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import yahooquery as yq
+import yfinance as yf
 import finnhub
 import pandas as pd
 
@@ -142,6 +143,30 @@ def available_screeners():
     return jsonify(s.available_screeners), 200
 
 
+# https://yahooquery.dpguthrie.com/guide/ticker/modules/#summary_detail
+@app.route('/summary-detail', methods=['GET'])
+def summary_detail():
+    symbol = request.args.get('symbol')
+    data = yq.Ticker(symbol)
+    return jsonify(data.summary_detail[symbol]), 200
+
+
+# https://yahooquery.dpguthrie.com/guide/ticker/miscellaneous/#news
+# @app.route('/news', methods=['GET'])
+# def news():
+#     symbol = request.args.get('symbol')
+#     data = yq.Ticker(symbol)
+#     return jsonify(data.news(20)), 200
+
+
+# # https://yahooquery.dpguthrie.com/guide/ticker/modules/#key_stats
+# @app.route('/key-stats', methods=['GET'])
+# def key_stats():
+#     symbol = request.args.get('symbol')
+#     data = yq.Ticker(symbol)
+#     return jsonify(data.key_stats[symbol]), 200
+
+
 # # https://yahooquery.dpguthrie.com/guide/ticker/historical/#history
 # @app.route('/history', methods=['GET'])
 # def history():
@@ -152,15 +177,6 @@ def available_screeners():
 #     history_df = data.history(period=period, interval=interval)
 #     history_dict = history_df.to_dict(orient='records')
 #     return jsonify(history_dict), 200
-
-
-# # https://yahooquery.dpguthrie.com/guide/ticker/miscellaneous/#news
-# @app.route('/news', methods=['GET'])
-# def news():
-#     ticker = request.args.get('ticker')
-#     count = request.args.get('count') or 10
-#     data = yq.Ticker(ticker)
-#     return jsonify(data.news(count)), 200
 
 
 # # https://yahooquery.dpguthrie.com/guide/ticker/miscellaneous/#quotes
@@ -179,14 +195,6 @@ def available_screeners():
 #     return jsonify(data.recommendations), 200
 
 
-# # https://yahooquery.dpguthrie.com/guide/ticker/modules/#summary_detail
-# @app.route('/summary-detail', methods=['GET'])
-# def summary_detail():
-#     ticker = request.args.get('ticker')
-#     data = yq.Ticker(ticker)
-#     return jsonify(data.summary_detail[ticker]), 200
-
-
 # # https://yahooquery.dpguthrie.com/guide/ticker/modules/#asset_profile
 # @app.route('/profile', methods=['GET'])
 # def profile():
@@ -201,14 +209,6 @@ def available_screeners():
 #     ticker = request.args.get('ticker')
 #     data = yq.Ticker(ticker)
 #     return jsonify(data.financial_data[ticker]), 200
-
-
-# # https://yahooquery.dpguthrie.com/guide/ticker/modules/#key_stats
-# @app.route('/key-stats', methods=['GET'])
-# def key_stats():
-#     ticker = request.args.get('ticker')
-#     data = yq.Ticker(ticker)
-#     return jsonify(data.key_stats[ticker]), 200
 
 
 # # https://yahooquery.dpguthrie.com/guide/ticker/modules/#esg_scores
