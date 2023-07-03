@@ -18,12 +18,7 @@ def search():
     quotes = data.get('quotes', [])
     filteredQuotes = list(filter(lambda result: result.get('exchange', '') in [
         'NYQ', 'NMS'] and result.get('quoteType', '') == 'EQUITY', quotes))
-    formattedQuotes = list(map(lambda result: {
-        'symbol': result.get('symbol', ''),
-        'name': result.get('shortname', ''),
-        'exchange': result.get('exchDisp', ''),
-    }, filteredQuotes))
-    return jsonify(formattedQuotes), 200
+    return jsonify(filteredQuotes), 200
 
 
 # https://yahooquery.dpguthrie.com/guide/misc/#get_trending
