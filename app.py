@@ -10,9 +10,12 @@ app = Flask(__name__)
 CORS(app)
 
 
+def check_exchange_and_quote_type(result):
+    return result.get('exchange', '') in ('NYQ', 'NMS') and result.get('quoteType', '') == 'EQUITY'
+
+
 def filter_exchange_and_quote_type(results):
-    return list(filter(lambda result: result.get('exchange', '') in [
-        'NYQ', 'NMS'] and result.get('quoteType', '') == 'EQUITY', results))
+    return list(filter(lambda result: check_exchange_and_quote_type(result), results))
 
 
 # https://yahooquery.dpguthrie.com/guide/misc/#search
@@ -60,34 +63,20 @@ def market_news():
 # https://yahooquery.dpguthrie.com/guide/ticker/modules/#price
 @app.route('/price', methods=['GET'])
 def price():
-    def format_price(price):
-        return {
-            'symbol': price.get('symbol', ''),
-            'name': price.get('shortName', ''),
-            'price': round(price.get('regularMarketPrice', 0), 2),
-            'change': round(price.get('regularMarketChange', 0), 2),
-            'changePercent': round(price.get('regularMarketChangePercent', 0) * 100, 2),
-            'exchange': 'NASDAQ' if price.get('exchange', '') == 'NMS' else 'NYSE',
-        }
-
     symbol = request.args.get('symbol')
     symbols = request.args.get('symbols')
     if symbol:
         data = yq.Ticker(symbol)
         price = data.price.get(symbol, None)
-        if not price or price.get('exchange', '') not in ('NMS', 'NYQ') or price.get('quoteType', '') != 'EQUITY':
+        if not check_exchange_and_quote_type(price):
             return jsonify({}), 404
-        return jsonify(format_price(price)), 200
+        return jsonify(price), 200
     else:
         symbolsArray = symbols.split(',')
         data = yq.Ticker(symbolsArray)
         prices = data.price
-        formattedPrices = []
-        for symbol, price in prices.items():
-            if type(price) is str or price.get('exchange', '') not in ('NMS', 'NYQ') or price.get('quoteType', '') != 'EQUITY':
-                continue
-            formattedPrices.append(format_price(price))
-        return jsonify(formattedPrices), 200
+        filteredPrices = filter_exchange_and_quote_type(prices.values())
+        return jsonify(filteredPrices), 200
 
 
 # https://yahooquery.dpguthrie.com/guide/screener/#available_screeners
