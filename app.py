@@ -79,26 +79,15 @@ def price():
         return jsonify(filteredPrices), 200
 
 
-# https://yahooquery.dpguthrie.com/guide/screener/#available_screeners
+# https://yahooquery.dpguthrie.com/guide/screener/#get_screeners
 @app.route('/screener', methods=['GET'])
 def screener():
-    def format_quote(quote):
-        return {
-            'symbol': quote.get('symbol', ''),
-            'name': quote.get('shortName', ''),
-            'price': round(quote.get('regularMarketPrice', 0), 2),
-            'change': round(quote.get('regularMarketChange', 0), 2),
-            'changePercent': round(quote.get('regularMarketChangePercent', 0), 2),
-        }
-
     screener_type = request.args.get('type')
     s = yq.Screener()
     data = s.get_screeners([screener_type])
     quotes = data.get(screener_type, {}).get('quotes', [])
-    filteredQuotes = list(filter(lambda quote: quote.get('exchange', '') in (
-        'NMS', 'NYQ') and quote.get('quoteType', '') == 'EQUITY', quotes))
-    formattedQuotes = list(map(format_quote, filteredQuotes))
-    return jsonify(formattedQuotes), 200
+    filteredQuotes = filter_exchange_and_quote_type(quotes)
+    return jsonify(filteredQuotes), 200
 
 
 # https://yahooquery.dpguthrie.com/guide/screener/#available_screeners
