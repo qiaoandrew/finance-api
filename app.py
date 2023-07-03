@@ -147,15 +147,6 @@ def history():
     history_dict = history_df.to_dict(orient='records')
     return jsonify(history_dict), 200
 
-
-# # https://yahooquery.dpguthrie.com/guide/ticker/modules/#key_stats
-# @app.route('/key-stats', methods=['GET'])
-# def key_stats():
-#     symbol = request.args.get('symbol')
-#     data = yq.Ticker(symbol)
-#     return jsonify(data.key_stats[symbol]), 200
-
-
 # # https://yahooquery.dpguthrie.com/guide/ticker/miscellaneous/#quotes
 # @app.route('/quotes', methods=['GET'])
 # def quotes():
@@ -221,17 +212,6 @@ def history():
 #     return jsonify(income_statement_dict), 200
 
 
-# # https://yahooquery.dpguthrie.com/guide/ticker/financials/#valuation_measures
-# @app.route('/valuation-measures', methods=['GET'])
-# def valuation_measures():
-#     ticker = request.args.get('ticker')
-#     period = request.args.get('period')
-#     data = yq.Ticker(ticker)
-#     valuation_measures_df = data.valuation_measures(frequency=period)
-#     valuation_measures_dict = valuation_measures_df.to_dict(orient='records')
-#     return jsonify(valuation_measures_dict), 200
-
-
 # # https://yahooquery.dpguthrie.com/guide/ticker/options/#option_chain
 # @app.route('/option-chain', methods=['GET'])
 # def option_chain():
@@ -240,38 +220,6 @@ def history():
 #     option_chain_df = data.option_chain
 #     option_chain_dict = option_chain_df.to_dict(orient='records')
 #     return jsonify(option_chain_dict), 200
-
-
-# # https://yahooquery.dpguthrie.com/guide/ticker/modules/#fund_performance
-# @app.route('/fund-performance', methods=['GET'])
-# def fund_performance():
-#     ticker = request.args.get('ticker')
-#     data = yq.Ticker(ticker)
-#     return jsonify(data.fund_performance[ticker]), 200
-
-
-# # https://yahooquery.dpguthrie.com/guide/ticker/modules/#fund_profile
-# @app.route('/fund-profile', methods=['GET'])
-# def fund_profile():
-#     ticker = request.args.get('ticker')
-#     data = yq.Ticker(ticker)
-#     return jsonify(data.fund_profile[ticker]), 200
-
-
-# # https://yahooquery.dpguthrie.com/guide/ticker/modules/#fund_sector_weightings
-# @app.route('/fund-sector-weightings', methods=['GET'])
-# def fund_sector_weightings():
-#     ticker = request.args.get('ticker')
-#     data = yq.Ticker(ticker)
-#     return jsonify(data.fund_sector_weightings[ticker]), 200
-
-
-# # https://yahooquery.dpguthrie.com/guide/ticker/modules/#fund_sector_weightings
-# @app.route('/fund-top-holdings', methods=['GET'])
-# def fund_top_holdings():
-#     ticker = request.args.get('ticker')
-#     data = yq.Ticker(ticker)
-#     return jsonify(data.fund_top_holdings[ticker]), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
