@@ -10,38 +10,32 @@ app = Flask(__name__)
 CORS(app)
 
 
+def filter_exchange_and_quote_type(results):
+    return list(filter(lambda result: result.get('exchange', '') in [
+        'NYQ', 'NMS'] and result.get('quoteType', '') == 'EQUITY', results))
+
+
 # https://yahooquery.dpguthrie.com/guide/misc/#search
 @app.route('/search', methods=['GET'])
 def search():
     query = request.args.get('query')
     data = yq.search(query)
     quotes = data.get('quotes', [])
-    filteredQuotes = list(filter(lambda result: result.get('exchange', '') in [
-        'NYQ', 'NMS'] and result.get('quoteType', '') == 'EQUITY', quotes))
+    filteredQuotes = filter_exchange_and_quote_type(quotes)
     return jsonify(filteredQuotes), 200
 
 
 # https://yahooquery.dpguthrie.com/guide/misc/#get_trending
 @app.route('/trending', methods=['GET'])
 def trending():
-    country = request.args.get('country') or 'united states'
-    data = yq.get_trending(country=country)
+    country = request.args.get('country')
+    data = yq.get_trending(country or 'united states')
     quotes = data.get('quotes', [])
     symbols = list(map(lambda result: result.get('symbol', ''), quotes))
     tickers = yq.Ticker(symbols)
-    prices = tickers.price
-    trending = []
-    for symbol, value in prices.items():
-        print(value)
-        if type(value) is str or value.get('exchange', '') not in ('NMS', 'NYQ') or value.get('quoteType', '') != 'EQUITY':
-            continue
-        trending.append({
-            'symbol': symbol,
-            'price': round(value.get('regularMarketPrice', 0), 2),
-            'change': round(value.get('regularMarketChange', 0), 2),
-            'changePercent': round(value.get('regularMarketChangePercent', 0) * 100, 2),
-        })
-    return jsonify(trending), 200
+    trending = tickers.price
+    filteredTrending = filter_exchange_and_quote_type(trending.values())
+    return jsonify(filteredTrending), 200
 
 
 # https://yahooquery.dpguthrie.com/guide/misc/#get_market_summary
