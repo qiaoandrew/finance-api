@@ -41,15 +41,9 @@ def trending():
 # https://yahooquery.dpguthrie.com/guide/misc/#get_market_summary
 @app.route('/market-summary', methods=['GET'])
 def market_summary():
-    country = request.args.get('country') or 'united states'
-    data = yq.get_market_summary(country=country)
-    formattedSummaries = list(map(lambda result: {
-        'name': result.get('shortName', ''),
-        'price': result.get('regularMarketPrice', {}).get('raw', 0),
-        'change': round(result.get('regularMarketChange', {}).get('raw', 0), 2),
-        'changePercent': round(result.get('regularMarketChangePercent', {}).get('raw', 0), 2)
-    }, data))
-    return jsonify(formattedSummaries), 200
+    country = request.args.get('country')
+    data = yq.get_market_summary(country or 'united states')
+    return jsonify(data), 200
 
 
 # https://finnhub.io/docs/api/market-news
