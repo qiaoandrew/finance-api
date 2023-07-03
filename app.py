@@ -54,14 +54,7 @@ def market_news():
     news = finnhub_client.general_news('general', min_id=0)
     filteredNews = list(
         filter(lambda article: article.get('image', ''), news))[:20]
-    formattedNews = list(map(lambda article: {
-        'id': article.get('id', ''),
-        'headline': article.get('headline', ''),
-        'summary': article.get('summary', ''),
-        'image': article.get('image', ''),
-        'url': article.get('url', ''),
-    }, filteredNews))
-    return jsonify(formattedNews), 200
+    return jsonify(filteredNews), 200
 
 
 # https://yahooquery.dpguthrie.com/guide/ticker/modules/#price
