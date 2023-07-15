@@ -37,6 +37,9 @@ def trending():
     symbols = list(map(lambda result: result.get('symbol', ''), quotes))
     tickers = yq.Ticker(symbols)
     trending = tickers.price
+    for value in trending.values():
+        if value == 'Invalid Cookie':
+            return jsonify([]), 200
     filteredTrending = filter_exchange_and_quote_type(trending.values())
     return jsonify(filteredTrending), 200
 
