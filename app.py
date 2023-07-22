@@ -11,6 +11,8 @@ CORS(app)
 
 
 def check_exchange_and_quote_type(result):
+    if type(result) == str:
+        return False
     return result.get('exchange', '') in ('NYQ', 'NMS') and result.get('quoteType', '') == 'EQUITY'
 
 
