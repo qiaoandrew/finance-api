@@ -1,8 +1,7 @@
 Flask
 flask_cors
-yahooquery==2.2.8
-yfinance==0.2.26
+yahooquery
+yfinance
 pandas
 gunicorn
 finnhub-python
-lxml==4.5.0
